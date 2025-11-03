@@ -1,6 +1,13 @@
 from fastapi import APIRouter
+from enum import Enum
 
 router = APIRouter(prefix="/math", tags=["math"])
+
+class Operation(str, Enum):
+    add = "add"
+    subtract = "subtract"
+    multiply = "multiply"
+    divide = "divide"
 
 @router.get("/add")
 def add_nums(a:int, b:int):
@@ -11,14 +18,11 @@ def subtract_nums(a: int, b:int):
     return {"result": a - b}
 
 @router.get("/calculate")
-def calculate(operation: str, a: float, b: float):
+def calculate(operation: Operation, a: float, b: float):
     operations = {
-        "add": a + b,
-        "subtract": a - b,
-        "multiply": a * b,
-        "divide": a / b if b != 0 else None
+        Operation.add: a + b,
+        Operation.subtract: a - b,
+        Operation.multiply: a * b,
+        Operation.divide: a / b if b != 0 else None
     }
-    result = operations.get(operation)
-    if result is None:
-        return {"error": "Invalid operation"}
-    return {"result": result}
+    return {"result": operations[operation]}
